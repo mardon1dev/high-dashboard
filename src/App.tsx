@@ -72,7 +72,6 @@ export default function App() {
 
   const debouncedSearch = useDebounce(search, DEBOUNCE_MS);
 
-  // Load mock data
   useEffect(() => {
     setIsLoading(true);
     const timer = setTimeout(() => {
@@ -82,6 +81,7 @@ export default function App() {
     return () => clearTimeout(timer);
   }, [setUsers]);
 
+  // Stable refs for virtualized table (UserRow is memoized – avoids re-rendering 10k rows)
   const handleSort = useCallback((field: SortField) => {
     setSortField((prev) => {
       if (prev === field) {
@@ -93,34 +93,12 @@ export default function App() {
     });
   }, []);
 
+  const handleRowClick = useCallback((user: User) => setSelectedUser(user), []);
+
   const filteredAndSortedUsers = useMemo(() => {
     const filtered = filterUsers(users, debouncedSearch, roleFilter);
     return sortUsers(filtered, sortField, sortDirection);
   }, [users, debouncedSearch, roleFilter, sortField, sortDirection]);
-
-  const handleRowClick = useCallback((user: User) => {
-    setSelectedUser(user);
-  }, []);
-
-  const handleCloseModal = useCallback(() => {
-    setSelectedUser(null);
-  }, []);
-
-  const handleSaveFailure = useCallback((message: string) => {
-    toast.error(message, { duration: 4000 });
-  }, []);
-
-  const handleSaveSuccess = useCallback(() => {
-    toast.success("Profile updated successfully.", { duration: 3000 });
-  }, []);
-
-  const handleAddUserSuccess = useCallback(() => {
-    toast.success("User added successfully.", { duration: 3000 });
-  }, []);
-
-  const handleAddUserFailure = useCallback((message: string) => {
-    toast.error(message, { duration: 4000 });
-  }, []);
 
   return (
     <div className="flex h-full flex-col bg-dashboard-cream">
@@ -170,22 +148,26 @@ export default function App() {
       {selectedUser && (
         <UserDetailsModal
           user={selectedUser}
-          onClose={handleCloseModal}
-          onSaveFailure={handleSaveFailure}
-          onSaveSuccess={handleSaveSuccess}
+          onClose={() => setSelectedUser(null)}
+          onSaveFailure={(msg) => toast.error(msg, { duration: 4000 })}
+          onSaveSuccess={() =>
+            toast.success("Profile updated successfully.", { duration: 3000 })
+          }
         />
       )}
 
       {isAddUserOpen && (
         <AddUserModal
           onClose={() => setIsAddUserOpen(false)}
-          onSuccess={handleAddUserSuccess}
-          onFailure={handleAddUserFailure}
+          onSuccess={() =>
+            toast.success("User added successfully.", { duration: 3000 })
+          }
+          onFailure={(msg) => toast.error(msg, { duration: 4000 })}
         />
       )}
 
       <Toaster
-        position="bottom-right"
+        position="top-center"
         toastOptions={{
           duration: 4000,
           style: {
