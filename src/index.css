@@ -1,0 +1,51 @@
+@import "tailwindcss";
+
+@theme {
+  /* Color Hunt palette */
+  --color-dashboard-dark: #40513b;
+  --color-dashboard-green: #628141;
+  --color-dashboard-cream: #e5d9b6;
+  --color-dashboard-orange: #e67e22;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+/* --- Custom Scrollbar Styling --- */
+
+/* 1. The width/height of the scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 18px;
+}
+
+/* 2. The track (the background) */
+::-webkit-scrollbar-track {
+  background: var(--color-dashboard-cream);
+  border-radius: 10px;
+}
+
+/* 3. The thumb (the draggable part) */
+::-webkit-scrollbar-thumb {
+  background: var(--color-dashboard-green);
+  border-radius: 10px;
+  border: 2px solid var(--color-dashboard-cream); /* Creates a "padding" effect */
+}
+
+/* 4. Hover effect on the thumb */
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-dashboard-dark);
+}
+
+/* Firefox Support */
+* {
+  scrollbar-width: auto;
+  scrollbar-color: var(--color-dashboard-green) var(--color-dashboard-cream);
+}
+
+::-webkit-scrollbar-corner {
+  background: var(--color-dashboard-cream);
+}
